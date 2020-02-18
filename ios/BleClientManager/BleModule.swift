@@ -70,13 +70,16 @@ public class BleClientManager : NSObject {
     @objc
     public init(queue: DispatchQueue, restoreIdentifierKey: String?) {
         self.queue = queue
+        var options = [
+              CBCentralManagerOptionShowPowerAlertKey: true as AnyObject
+            ]
 
         if let key = restoreIdentifierKey {
-            manager = BluetoothManager(queue: queue,
-                                       options: [CBCentralManagerOptionRestoreIdentifierKey: key as AnyObject])
-        } else {
-            manager = BluetoothManager(queue: queue)
+            options[CBCentralManagerOptionRestoreIdentifierKey] = key as AnyObject
+            
         }
+        
+        manager = BluetoothManager(queue: queue, options: options)
 
         super.init()
         stateDisposable = manager.rx_state.subscribe(onNext: { [weak self] newState in
